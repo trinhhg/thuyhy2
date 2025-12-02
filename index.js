@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   // === 1. CONFIG & STATE ===
-  const STORAGE_KEY = 'trinh_hg_settings_v15_final'; 
-  const INPUT_STATE_KEY = 'trinh_hg_input_state_v15';
+  const STORAGE_KEY = 'trinh_hg_settings_v17_final'; 
+  const INPUT_STATE_KEY = 'trinh_hg_input_state_v17'; 
 
   const defaultState = {
     currentMode: 'default',
@@ -75,13 +75,22 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Get Text Nodes: Dùng cho việc tìm kiếm text để replace ---
   function getTextNodes(node) {
       let textNodes = [];
-      if (node.nodeType === 3) {
-          textNodes.push(node);
-      } else {
-          for (let child of node.childNodes) {
-              // Bỏ qua nội dung trong thẻ mark để tránh replace chồng chéo
-              if (child.nodeType === 1 && child.tagName.toLowerCase() === 'mark') continue; 
-              textNodes = textNodes.concat(getTextNodes(child));
+      const walker = document.createTreeWalker(
+          node, 
+          NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT, 
+          { acceptNode: function(n) {
+              if (n.nodeType === 1 && (n.tagName === 'CODE' || n.tagName === 'PRE')) return NodeFilter.FILTER_REJECT;
+              if (n.nodeType === 1 && n.tagName === 'MARK') return NodeFilter.FILTER_SKIP;
+              if (n.nodeType === 3) return NodeFilter.FILTER_ACCEPT;
+              return NodeFilter.FILTER_SKIP;
+          }},
+          false
+      );
+      
+      let n;
+      while (n = walker.nextNode()) {
+          if (n.nodeType === 3 && n.nodeValue.trim().length > 0) {
+              textNodes.push(n);
           }
       }
       return textNodes;
@@ -89,24 +98,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- PRESERVE CASE: Giữ format viết hoa của từ gốc ---
   function preserveCase(original, replacement) {
-      if (original === original.toUpperCase()) {
+      if (original === original.toUpperCase() && original.length > 0) {
           return replacement.toUpperCase();
       }
-      if (original[0] === original[0].toUpperCase()) {
-          return replacement.charAt(0).toUpperCase() + replacement.slice(1);
+      if (original[0] === original[0].toUpperCase() && original.slice(1) === original.slice(1).toLowerCase()) {
+          return replacement.charAt(0).toUpperCase() + replacement.slice(1).toLowerCase();
       }
       return replacement;
   }
 
   // --- AUTO CAPS LOGIC (Sử dụng TreeWalker) ---
-  // Logic: Duyệt qua toàn bộ kết quả sau khi đã replace. 
-  // Gặp dấu ngắt câu (. ? ! ...) -> Bật cờ "cần viết hoa".
-  // Gặp chữ cái tiếp theo -> Viết hoa & Tắt cờ.
   function applyAutoCapsToDOM(rootNode) {
-      // TreeWalker duyệt qua TẤT CẢ text nodes (bao gồm cả trong <mark>)
       const walker = document.createTreeWalker(rootNode, NodeFilter.SHOW_TEXT, null, false);
       let node;
-      let pendingCap = true; // Mặc định đầu văn bản cần viết hoa
+      let pendingCap = true; 
 
       while (node = walker.nextNode()) {
           const text = node.nodeValue;
@@ -117,30 +122,24 @@ document.addEventListener('DOMContentLoaded', () => {
               const char = text[i];
               
               // 1. Kiểm tra dấu câu kích hoạt Auto Caps
-              // Bao gồm: . ? ! và dấu ba chấm (…)
               if (/[\.\?\!\n\u2026]/.test(char)) {
                   pendingCap = true;
                   newText += char;
               } 
-              // 2. Bỏ qua các ký tự không phải chữ (khoảng trắng, ngoặc, quote)
-              // Lưu ý: Dấu ngoặc/quote đi liền sau dấu chấm vẫn giữ trạng thái pendingCap
-              else if (/[^a-zà-ỹ0-9]/i.test(char)) {
-                  newText += char;
-              }
-              // 3. Nếu là chữ cái
-              else if (/[a-zà-ỹ]/i.test(char)) {
+              // 2. Nếu là chữ cái (sử dụng Unicode property \p{L})
+              else if (/\p{L}/u.test(char)) {
                   if (pendingCap) {
                       newText += char.toUpperCase();
-                      pendingCap = false; // Đã viết hoa xong, tắt cờ
+                      pendingCap = false; 
                       modified = true;
                   } else {
                       newText += char;
                   }
               }
-              // 4. Số hoặc ký tự khác
+              // 3. Nếu là số hoặc ký tự khác (khoảng trắng, dấu ngoặc, v.v.)
               else {
                   newText += char;
-                  pendingCap = false; // Gặp số thì coi như đã bắt đầu câu, tắt cờ
+                  if (/[0-9]/.test(char)) pendingCap = false;
               }
           }
 
@@ -149,6 +148,9 @@ document.addEventListener('DOMContentLoaded', () => {
           }
       }
   }
+  
+  // FIX: Kiểm tra xem ký tự có phải là ký tự chữ cái/số/gạch dưới (Word character) không.
+  const isWordChar = (char) => /[\p{L}\p{N}_]/u.test(char);
 
   // === 3. CORE REPLACE FUNCTION ===
   function performReplaceAll() {
@@ -165,15 +167,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // --- BƯỚC 1: CHUẨN HÓA INPUT ---
       let rawText = els.inputText.value;
-      let normalizedText = normalizeText(rawText);
+      let normalizedText = normalizeText(rawText); 
       
-      // Reset Output
       els.outputText.innerHTML = '';
       els.outputText.innerText = normalizedText; 
 
       let totalCount = 0;
 
-      // Chuẩn hóa Rules (Sắp xếp dài trước ngắn để tránh replace nhầm)
       const rules = mode.pairs
         .filter(p => p.find)
         .map(p => ({
@@ -186,33 +186,30 @@ document.addEventListener('DOMContentLoaded', () => {
       // --- BƯỚC 2: THỰC HIỆN REPLACE (LOGIC GOOGLE DOCS) ---
       rules.forEach(rule => {
           const findStr = rule.normalizedFind;
-          let maxPasses = 50000; // Safety break
+          let maxPasses = 50000; 
           let pass = 0;
 
-          // Vòng lặp tìm kiếm trong Text Nodes
           while (pass < maxPasses) {
               let foundInThisPass = false;
               const nodes = getTextNodes(els.outputText);
               
               for (const node of nodes) {
                    const txt = node.nodeValue;
-                   // Logic tìm kiếm Case Insensitive hoặc Sensitive
                    const searchIn = mode.matchCase ? txt : txt.toLowerCase();
                    const searchFor = mode.matchCase ? findStr : findStr.toLowerCase();
                    let idx = searchIn.indexOf(searchFor);
 
                    if (idx !== -1) {
-                       // --- CHECK WHOLE WORD ---
+                       
+                       // --- FIX LỖI WHOLE WORD: Chỉ kiểm tra ký tự trước và sau là Word Character ---
                        if (mode.wholeWord) {
                             const before = idx > 0 ? txt[idx-1] : '';
                             const after = idx + findStr.length < txt.length ? txt[idx + findStr.length] : '';
                             
-                            // Sử dụng Regex Unicode Property \p{L} để check ký tự chữ cái chính xác cho Tiếng Việt
-                            // Nếu ký tự liền trước hoặc liền sau là chữ cái/số/_ -> Bỏ qua
-                            const isWordChar = /[\p{L}\p{N}_]/u;
-                            
-                            if (isWordChar.test(before) || isWordChar.test(after)) {
-                                continue; // Không phải whole word
+                            // YÊU CẦU: Nếu ký tự trước VÀ ký tự sau ĐỀU KHÔNG phải là Word Character (Chữ/Số/Gạch dưới) thì MỚI thay thế.
+                            // Điều này cho phép dấu câu (không phải Word Character) được bỏ qua.
+                            if (isWordChar(before) || isWordChar(after)) {
+                                continue; 
                             }
                        }
 
@@ -220,17 +217,14 @@ document.addEventListener('DOMContentLoaded', () => {
                        let replacement = rule.replace;
                        const originalMatch = txt.substr(idx, findStr.length);
                        
-                       // Nếu KHÔNG bật Match Case -> Cố gắng giữ format viết hoa (Preserve Case)
                        if (!mode.matchCase) {
                            replacement = preserveCase(originalMatch, replacement);
                        }
 
                        // --- DOM MODIFICATION ---
-                       // Tách node text thành 3 phần: [Trước] [Từ tìm thấy] [Sau]
                        const matchNode = node.splitText(idx);
                        matchNode.splitText(findStr.length);
                        
-                       // Tạo thẻ highlight thay thế cho phần [Từ tìm thấy]
                        const mark = document.createElement('mark');
                        mark.className = 'hl-yellow'; 
                        mark.textContent = replacement;
@@ -239,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
                        
                        totalCount++;
                        foundInThisPass = true;
-                       break; // Break để refetch nodes vì DOM đã thay đổi
+                       break; 
                    }
               }
               if (!foundInThisPass) break; 
@@ -248,23 +242,22 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       
       // --- BƯỚC 3: AUTO CAPS (CHẠY SAU CÙNG) ---
-      // Chỉ chạy khi replace đã hoàn tất, đảm bảo logic "Em? Em" đúng
       if (mode.autoCaps) {
           applyAutoCapsToDOM(els.outputText);
       }
 
+      // --- CLEANUP (FIX: Xóa input) ---
+      els.inputText.value = ''; 
+      saveTempInput(); 
+      
       updateCounters();
-      
-      // --- CLEANUP ---
-      els.inputText.value = ''; // Xóa input sau khi xong
-      saveTempInput(); // Lưu trạng thái rỗng
-      
       showNotification(`Đã thay thế ${totalCount} vị trí!`);
       replaceBtn.disabled = false;
       replaceBtn.textContent = 'THỰC HIỆN THAY THẾ';
   }
 
   // === 4. UI & UTILS ===
+  
   function renderModeSelect() {
     els.modeSelect.innerHTML = '';
     Object.keys(state.modes).sort().forEach(m => {
@@ -284,7 +277,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const mode = state.modes[state.currentMode];
     if(mode) {
-        // Cập nhật text và class active cho các nút toggle
         els.matchCaseBtn.textContent = `Match Case: ${mode.matchCase ? 'BẬT' : 'Tắt'}`;
         els.matchCaseBtn.classList.toggle('active', mode.matchCase);
         
@@ -339,7 +331,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!silent) showNotification('Đã lưu cài đặt!', 'success');
   }
 
-  // --- CSV Logic ---
   function parseCSVLine(text) {
     const result = [];
     let cell = '';
@@ -421,7 +412,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const lines = normalizedText.split('\n');
     let chapterHeader = '', contentBody = normalizedText;
     
-    // Logic tách header chương
     if (/^(Chương|Chapter)\s+\d+/.test(lines[0].trim())) {
         chapterHeader = lines[0].trim(); contentBody = lines.slice(1).join('\n');
     }
@@ -447,9 +437,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if(cEl) cEl.textContent = 'Words: ' + countWords(el.value);
         }
     }
-    // Clean Input
+    
     els.splitInput.value = '';
     saveTempInput();
+    
     showNotification('Đã chia xong!', 'success');
   }
 
