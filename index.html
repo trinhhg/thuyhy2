@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tiện Ích Của Trịnh Hg - Pro V14 (Final Fix)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  
+  <header class="app-header">
+    <div class="header-left">
+      <h1>Tiện Ích Của Trịnh Hg</h1>
+      <div class="donate-info">
+        <span class="donate-label">DON@TE:</span>
+        <span class="donate-details">MB BANK - TRINH THI XUAN HUONG – 0917678211</span>
+      </div>
+    </div>
+    <div class="header-center">
+      <nav class="tabs">
+        <button class="tab-button active" data-tab="settings">Cài Đặt</button>
+        <button class="tab-button" data-tab="replace">Thay Thế</button>
+        <button class="tab-button" data-tab="split">Chia Chương</button>
+      </nav>
+    </div>
+    <div class="header-right"></div>
+  </header>
+
+  <main class="app-body">
+    
+    <div id="settings" class="tab-content active">
+      <div class="panel-container">
+        <div class="panel-header">
+          <h2>Quản Lý Cặp Thay Thế</h2>
+          <div class="mode-actions">
+             <div class="select-wrapper">
+                <label>Chế độ:</label>
+                <select id="mode-select"></select>
+             </div>
+             <button id="add-mode" class="btn btn-primary">+ Mới</button>
+             <button id="copy-mode" class="btn btn-secondary">Sao Chép</button>
+             <button id="rename-mode" class="btn btn-warning hidden">Đổi Tên</button>
+             <button id="delete-mode" class="btn btn-danger hidden">Xóa</button>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <div class="toolbar-group">
+            <button id="match-case" class="btn btn-toggle">Match Case: Tắt</button>
+            <button id="whole-word" class="btn btn-toggle">Whole Word: Tắt</button>
+            <button id="auto-caps" class="btn btn-toggle">Auto Caps: Tắt</button>
+          </div>
+          <div class="toolbar-group">
+            <button id="import-settings" class="btn btn-outline">Nhập Cài Đặt (CSV)</button>
+            <button id="export-settings" class="btn btn-outline">Xuất Cài Đặt (CSV)</button>
+          </div>
+        </div>
+
+        <div class="list-actions">
+           <button id="add-pair" class="btn btn-success icon-btn">Thêm cặp mới</button>
+           <button id="save-settings" class="btn btn-primary icon-btn">Lưu tất cả</button>
+        </div>
+
+        <div class="scroll-area">
+          <div id="punctuation-list"></div>
+          <div id="empty-state" class="empty-message hidden">Chưa có cặp thay thế nào.</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="replace" class="tab-content">
+      <div class="split-pane">
+        <div class="pane input-pane">
+          <div class="pane-header">
+            <span>Văn bản gốc</span>
+            <span id="input-word-count" class="badge">Words: 0</span>
+          </div>
+          <textarea id="input-text" class="custom-scrollbar" placeholder="Dán văn bản cần xử lý vào đây..."></textarea>
+          <div class="pane-footer">
+            <button id="replace-button" class="btn btn-primary full-width">THỰC HIỆN THAY THẾ</button>
+          </div>
+        </div>
+
+        <div class="pane output-pane">
+          <div class="pane-header">
+            <span>Kết quả (Highlight từ đã thay)</span>
+            <span id="output-word-count" class="badge">Words: 0</span>
+          </div>
+          <div id="output-text" class="custom-scrollbar output-div" contenteditable="false" data-placeholder="Kết quả sẽ hiện ra ở đây..."></div>
+          <div class="pane-footer">
+            <button id="copy-button" class="btn btn-success full-width">Sao chép kết quả</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="split" class="tab-content">
+      <div class="split-controls">
+        <label>Số phần chia:</label>
+        <div class="split-buttons-group">
+          <button class="split-mode-btn active" data-split="2">2</button>
+          <button class="split-mode-btn" data-split="3">3</button>
+          <button class="split-mode-btn" data-split="4">4</button>
+          <button class="split-mode-btn" data-split="5">5</button>
+          <button class="split-mode-btn" data-split="6">6</button>
+          <button class="split-mode-btn" data-split="7">7</button>
+          <button class="split-mode-btn" data-split="8">8</button>
+          <button class="split-mode-btn" data-split="9">9</button>
+          <button class="split-mode-btn" data-split="10">10</button>
+        </div>
+      </div>
+
+      <div class="split-grid-container">
+        <div id="split-input-container" class="split-box input-box">
+          <div class="split-header">
+            <span>Văn bản gốc</span>
+            <span id="split-input-word-count" class="badge">Words: 0</span>
+          </div>
+          <textarea id="split-input-text" class="custom-scrollbar" placeholder="Dán chương truyện vào đây..."></textarea>
+          <div class="split-footer">
+            <button id="split-action-btn" class="btn btn-primary full-width">Chia Chương Ngay</button>
+          </div>
+        </div>
+        <div id="split-outputs-wrapper" class="outputs-wrapper"></div>
+      </div>
+    </div>
+
+  </main>
+  <div id="notification-container"></div>
+  <script src="index.js"></script>
+</body>
+</html>
