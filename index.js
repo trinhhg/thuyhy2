@@ -202,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
           // Group 1: Dấu kết thúc câu (.?!) + khoảng trắng HOẶC đầu dòng (^ hoặc \n)
           // Group 2: Có thể là marker kết thúc của replace trước đó (nếu có) - non-capturing
           // Group 3: Ký tự chữ cái viết thường (\p{LL})
-          const autoCapsRegex = /(^|[\.\?\!\n]\s*)(?:[\uE000-\uE003]*)([\p{LL}])/gmu;
+          const autoCapsRegex = /(^|[\.?\!\n]\s*)(?:\uE000|\uE001|\uE002|\uE003)*([\p{Ll}])/gmu;
 
           processedText = processedText.replace(autoCapsRegex, (fullMatch, prefix, char) => {
               // Kiểm tra xem ký tự này có nằm trong vùng đã replace (Yellow) không?
