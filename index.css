@@ -3,25 +3,26 @@
 body {
   font-family: 'Montserrat', sans-serif;
   margin: 0;
-  min-height: 100vh;
+  height: 100vh; /* Cố định chiều cao màn hình */
   display: flex;
   flex-direction: column;
   background-color: #f3f4f6;
   color: #374151;
-  overflow-y: hidden; /* Fix scroll body */
+  overflow: hidden; /* Ẩn thanh cuộn của body chính để quản lý cuộn bên trong từng tab */
 }
 
 /* === SCROLLBAR === */
-.custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+.custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
 /* === HEADER === */
 .app-header {
   background: white; border-bottom: 1px solid #e5e7eb; padding: 0 20px; height: 60px;
   display: flex; justify-content: space-between; align-items: center;
-  flex-shrink: 0;
+  flex-shrink: 0; /* Header không bị co lại */
+  z-index: 100;
 }
 .header-left { flex: 1.5; }
 .header-right { flex: 0.5; }
@@ -53,9 +54,32 @@ body {
 .tab-button.active { color: #2563eb; border-bottom-color: #2563eb; background: linear-gradient(to top, #eff6ff, transparent); }
 
 /* === MAIN CONTENT === */
-.app-body { flex: 1; padding: 15px; display: flex; flex-direction: column; overflow: hidden; }
-.tab-content { display: none; width: 100%; height: 100%; flex-direction: column; overflow: hidden; }
+.app-body { 
+  flex: 1; /* Chiếm toàn bộ phần còn lại dưới header */
+  padding: 15px; 
+  display: flex; 
+  flex-direction: column; 
+  overflow: hidden; /* Quan trọng: Ngăn tràn khung chính */
+  position: relative;
+}
+
+.tab-content { 
+  display: none; 
+  width: 100%; 
+  height: 100%; 
+  flex-direction: column; 
+}
 .tab-content.active { display: flex; }
+
+/* QUAN TRỌNG: Cấu hình cuộn riêng cho từng tab */
+#settings, #split {
+  overflow-y: auto; /* Cho phép cuộn dọc ở tab Cài đặt và Chia chương */
+  padding-bottom: 20px;
+}
+
+#replace {
+  overflow: hidden; /* Tab thay thế không cuộn body, mà cuộn bên trong textarea */
+}
 
 /* === BUTTONS & COMPONENTS === */
 .btn {
@@ -79,8 +103,7 @@ body {
 
 .btn-toggle { 
   background: #e5e7eb; color: #6b7280; 
-  width: auto; min-width: 120px; padding: 8px 15px;
-  justify-content: flex-start; white-space: nowrap;
+  width: auto; min-width: 140px; padding: 8px 15px; justify-content: flex-start; 
 }
 .btn-toggle.active { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
 
@@ -95,20 +118,19 @@ body {
 /* === SETTINGS === */
 .panel-container {
   background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  display: flex; flex-direction: column; max-width: 1000px; margin: 0 auto; width: 100%; height: 100%; overflow: hidden;
+  display: flex; flex-direction: column; max-width: 1000px; margin: 0 auto; width: 100%;
+  flex-shrink: 0; /* Ngăn co lại */
 }
-.panel-header {
-  padding: 15px 20px; border-bottom: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
-}
+.panel-header { padding: 15px 20px; border-bottom: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center; }
 .panel-header h2 { margin: 0; font-size: 16px; color: #111827; }
 .mode-actions { display: flex; gap: 8px; align-items: center; }
 .select-wrapper { display: flex; align-items: center; gap: 8px; font-size: 13px; margin-right: 10px; }
 #mode-select { padding: 6px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px; outline: none; }
 
-.toolbar { padding: 10px 20px; background: #f9fafb; border-bottom: 1px solid #f3f4f6; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; flex-shrink: 0; }
+.toolbar { padding: 10px 20px; background: #f9fafb; border-bottom: 1px solid #f3f4f6; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
 .toolbar-group { display: flex; gap: 8px; }
-.list-actions { padding: 10px 20px; display: flex; gap: 10px; flex-shrink: 0; }
-.scroll-area { padding: 10px 20px; background: #f9fafb; overflow-y: auto; flex: 1; }
+.list-actions { padding: 10px 20px; display: flex; gap: 10px; }
+.scroll-area { padding: 10px 20px; background: #f9fafb; }
 
 .punctuation-item {
   display: flex; gap: 8px; margin-bottom: 8px; align-items: center;
@@ -117,59 +139,105 @@ body {
 .punctuation-item input { flex: 1; padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 4px; font-size: 13px; }
 .punctuation-item input:focus { border-color: #2563eb; }
 .punctuation-item button.remove {
-  width: 28px; height: 28px; border-radius: 4px; border: none; background: #fee2e2; color: #dc2626; cursor: pointer;
-  display: flex; justify-content: center; align-items: center; font-size: 16px;
+  width: 28px; height: 28px; border-radius: 4px; border: none; background: #fee2e2; color: #dc2626; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 16px;
 }
 .punctuation-item button.remove:hover { background: #ef4444; color: white; }
 
-/* === REPLACE PANE === */
-.split-pane { display: flex; gap: 15px; height: 100%; overflow: hidden; }
-.pane {
-  flex: 1; display: flex; flex-direction: column; background: white; 
-  border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden;
+/* === REPLACE PANE (FIXED LAYOUT) === */
+.split-pane { 
+  display: flex; 
+  gap: 15px; 
+  height: 100%; /* Chiếm full chiều cao tab */
+  min-height: 0; /* Quan trọng cho Firefox/Flex */
 }
-.pane-header { padding: 10px 15px; background: #f9fafb; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 13px; flex-shrink: 0; }
-.pane textarea { flex: 1; border: none; padding: 15px; resize: none; font-size: 15px; line-height: 1.6; font-family: inherit; color: #333; }
 
-/* === OUTPUT DIV (HIGHLIGHT) === */
-.output-div {
-  flex: 1; border: none; padding: 15px; font-size: 15px; line-height: 1.6; font-family: inherit;
-  white-space: pre-wrap; overflow-y: auto; background-color: #fff; color: #374151; word-wrap: break-word; user-select: text;
+.pane {
+  flex: 1; 
+  display: flex; 
+  flex-direction: column; 
+  background: white; 
+  border-radius: 8px; 
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+  overflow: hidden;
+  height: 100%; /* Full chiều cao cột */
+  min-height: 0; /* Cho phép con co lại */
 }
+
+.pane-header { 
+  padding: 10px 15px; background: #f9fafb; border-bottom: 1px solid #e5e7eb; 
+  display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 13px; flex-shrink: 0; 
+}
+
+/* FIX: Textarea và Output div sẽ tự cuộn, không đẩy khung cha */
+.pane textarea { 
+  flex: 1; 
+  border: none; 
+  padding: 15px; 
+  resize: none; 
+  font-size: 15px; 
+  line-height: 1.6; 
+  font-family: inherit; 
+  color: #333; 
+  overflow-y: auto; /* Cuộn trong ô */
+  min-height: 0; /* Fix lỗi flex item overflow */
+}
+
+/* === OUTPUT DIV === */
+.output-div {
+  flex: 1; 
+  border: none; 
+  padding: 15px; 
+  font-size: 15px; 
+  line-height: 1.8; /* Tăng khoảng cách dòng */
+  font-family: inherit;
+  white-space: pre-wrap; 
+  overflow-y: auto; /* Cuộn trong ô */
+  background-color: #fff; 
+  color: #374151; 
+  word-wrap: break-word; 
+  user-select: text;
+  min-height: 0; /* Fix lỗi flex item overflow */
+}
+
+/* Thêm khoảng cách đoạn văn trong output */
+.output-div > div, .output-div > p {
+    margin-bottom: 1em;
+}
+
 .output-div:empty::before { content: attr(data-placeholder); color: #9ca3af; pointer-events: none; }
 
 /* HIGHLIGHT STYLE */
 mark.hl-yellow {
-  background-color: #fde047; /* Vàng */
-  color: #000;
-  border-radius: 2px;
-  padding: 0 1px;
-  border-bottom: 2px solid #eab308;
-  font-weight: 600;
+  background-color: #fde047; color: #000; border-radius: 2px; padding: 0 1px;
+  border-bottom: 2px solid #eab308; font-weight: 600; display: inline;
 }
-
-mark.hl-blue {
-  background-color: #a5f3fc; /* Xanh dương nhạt */
-  color: #000;
-  border-radius: 2px;
-  padding: 0 1px;
-  border-bottom: 2px solid #06b6d4;
-  font-weight: 600;
-}
-
 .pane-footer { padding: 10px; border-top: 1px solid #e5e7eb; background: #f9fafb; flex-shrink: 0; }
 
-/* === SPLIT TAB === */
-.split-controls { background: white; padding: 10px 15px; border-radius: 8px; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); flex-shrink: 0; }
+/* === SPLIT TAB (FIXED SCROLL) === */
+.split-controls { 
+  background: white; padding: 10px 15px; border-radius: 8px; margin-bottom: 10px; 
+  display: flex; align-items: center; gap: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); flex-shrink: 0;
+}
 .split-buttons-group { display: flex; gap: 5px; flex-wrap: wrap; }
 .split-mode-btn { width: 32px; height: 32px; border: 1px solid #d1d5db; background: white; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; }
 .split-mode-btn.active { background: #2563eb; color: white; border-color: #2563eb; }
 
-.split-grid-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; align-content: start; height: 100%; padding-bottom: 20px; overflow-y: auto; }
+.split-grid-container { 
+  display: grid; 
+  grid-template-columns: repeat(4, 1fr); 
+  gap: 10px; 
+  align-content: start; 
+  height: auto; /* Chiều cao tự động để cho phép scroll ở tab cha */
+}
 .outputs-wrapper { display: contents; }
-.split-box { background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; flex-direction: column; border: 1px solid #e5e7eb; height: 350px; }
+
+.split-box { 
+  background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+  display: flex; flex-direction: column; border: 1px solid #e5e7eb; 
+  height: 350px; /* Chiều cao cố định cho mỗi box */
+}
 .split-header { padding: 8px 12px; background: #f9fafb; border-bottom: 1px solid #e5e7eb; font-size: 12px; font-weight: 600; display: flex; justify-content: space-between; }
-.split-box textarea { flex: 1; border: none; padding: 10px; resize: none; font-size: 13px; font-family: inherit; }
+.split-box textarea { flex: 1; border: none; padding: 10px; resize: none; font-size: 13px; font-family: inherit; overflow-y: auto; }
 .split-footer { padding: 8px; border-top: 1px solid #e5e7eb; background: #f9fafb; }
 
 @media (max-width: 1200px) { .split-grid-container { grid-template-columns: repeat(2, 1fr); } }
