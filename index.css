@@ -3,12 +3,12 @@
 body {
   font-family: 'Montserrat', sans-serif;
   margin: 0;
-  height: 100vh; /* Cố định chiều cao màn hình */
+  height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: #f3f4f6;
   color: #374151;
-  overflow: hidden; /* Ẩn thanh cuộn của body chính để quản lý cuộn bên trong từng tab */
+  overflow: hidden;
 }
 
 /* === SCROLLBAR === */
@@ -21,16 +21,13 @@ body {
 .app-header {
   background: white; border-bottom: 1px solid #e5e7eb; padding: 0 20px; height: 60px;
   display: flex; justify-content: space-between; align-items: center;
-  flex-shrink: 0; /* Header không bị co lại */
-  z-index: 100;
+  flex-shrink: 0; z-index: 100;
 }
 .header-left { flex: 1.5; }
-.header-right { flex: 0.5; }
-.header-center { flex: 2; display: flex; justify-content: center; height: 100%; }
-.header-left h1 { margin: 0; font-size: 16px; color: #111827; font-weight: 700; margin-bottom: 4px; }
+.header-left h1 { margin: 0; font-size: 16px; color: #111827; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.version-tag { font-size: 10px; background: #2563eb; color: white; padding: 2px 6px; border-radius: 4px; }
 
-/* DONATE STYLES */
-.donate-info { font-size: 11px; display: flex; align-items: center; gap: 5px; }
+.donate-info { margin-top: 4px; font-size: 11px; display: flex; align-items: center; gap: 5px; }
 .donate-label {
     background: #dc2626; color: white; padding: 2px 6px; border-radius: 4px;
     font-weight: 800; font-size: 10px; animation: pulse-red 2s infinite;
@@ -41,6 +38,9 @@ body {
     70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); }
     100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
 }
+
+.header-center { flex: 2; display: flex; justify-content: center; height: 100%; }
+.header-right { flex: 0.5; }
 
 /* === TABS === */
 .tabs { display: flex; gap: 5px; height: 100%; align-items: flex-end; }
@@ -54,34 +54,14 @@ body {
 .tab-button.active { color: #2563eb; border-bottom-color: #2563eb; background: linear-gradient(to top, #eff6ff, transparent); }
 
 /* === MAIN CONTENT === */
-.app-body { 
-  flex: 1; /* Chiếm toàn bộ phần còn lại dưới header */
-  padding: 15px; 
-  display: flex; 
-  flex-direction: column; 
-  overflow: hidden; /* Quan trọng: Ngăn tràn khung chính */
-  position: relative;
-}
-
-.tab-content { 
-  display: none; 
-  width: 100%; 
-  height: 100%; 
-  flex-direction: column; 
-}
+.app-body { flex: 1; padding: 15px; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+.tab-content { display: none; width: 100%; height: 100%; flex-direction: column; }
 .tab-content.active { display: flex; }
 
-/* QUAN TRỌNG: Cấu hình cuộn riêng cho từng tab */
-#settings, #split {
-  overflow-y: auto; /* Cho phép cuộn dọc ở tab Cài đặt và Chia chương */
-  padding-bottom: 20px;
-}
+#settings, #split { overflow-y: auto; padding-bottom: 20px; }
+#replace { overflow: hidden; }
 
-#replace {
-  overflow: hidden; /* Tab thay thế không cuộn body, mà cuộn bên trong textarea */
-}
-
-/* === BUTTONS & COMPONENTS === */
+/* === BUTTONS === */
 .btn {
   padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer;
   font-size: 12px; font-weight: 600; transition: all 0.2s;
@@ -100,27 +80,18 @@ body {
 .btn-warning:hover { background: #d97706; }
 .btn-outline { background: white; border: 1px solid #d1d5db; color: #374151; }
 .btn-outline:hover { border-color: #9ca3af; background: #f9fafb; }
+.btn-text { background: none; border: none; color: #ef4444; font-size: 11px; cursor: pointer; text-decoration: underline; }
 
-.btn-toggle { 
-  background: #e5e7eb; color: #6b7280; 
-  width: auto; min-width: 140px; padding: 8px 15px; justify-content: flex-start; 
-}
+.btn-toggle { background: #e5e7eb; color: #6b7280; width: auto; min-width: 140px; padding: 8px 15px; justify-content: flex-start; }
 .btn-toggle.active { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
 
 .hidden { display: none !important; }
 .full-width { width: 100%; }
 .icon-btn { min-width: 120px; }
-.badge { 
-  background: #1abc9c; color: white; padding: 3px 10px; border-radius: 12px; 
-  font-size: 11px; font-weight: 600; box-shadow: 0 2px 4px rgba(26, 188, 156, 0.3);
-}
+.badge { background: #1abc9c; color: white; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; box-shadow: 0 2px 4px rgba(26, 188, 156, 0.3); }
 
 /* === SETTINGS === */
-.panel-container {
-  background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  display: flex; flex-direction: column; max-width: 1000px; margin: 0 auto; width: 100%;
-  flex-shrink: 0; /* Ngăn co lại */
-}
+.panel-container { background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; flex-direction: column; max-width: 1000px; margin: 0 auto; width: 100%; flex-shrink: 0; }
 .panel-header { padding: 15px 20px; border-bottom: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center; }
 .panel-header h2 { margin: 0; font-size: 16px; color: #111827; }
 .mode-actions { display: flex; gap: 8px; align-items: center; }
@@ -132,124 +103,53 @@ body {
 .list-actions { padding: 10px 20px; display: flex; gap: 10px; }
 .scroll-area { padding: 10px 20px; background: #f9fafb; }
 
-.punctuation-item {
-  display: flex; gap: 8px; margin-bottom: 8px; align-items: center;
-  background: white; padding: 6px 10px; border-radius: 6px; border: 1px solid #e5e7eb;
-}
+.punctuation-item { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; background: white; padding: 6px 10px; border-radius: 6px; border: 1px solid #e5e7eb; }
 .punctuation-item input { flex: 1; padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 4px; font-size: 13px; }
 .punctuation-item input:focus { border-color: #2563eb; }
-.punctuation-item button.remove {
-  width: 28px; height: 28px; border-radius: 4px; border: none; background: #fee2e2; color: #dc2626; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 16px;
-}
+.punctuation-item button.remove { width: 28px; height: 28px; border-radius: 4px; border: none; background: #fee2e2; color: #dc2626; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 16px; }
 .punctuation-item button.remove:hover { background: #ef4444; color: white; }
 
-/* === REPLACE PANE (FIXED LAYOUT) === */
-.split-pane { 
-  display: flex; 
-  gap: 15px; 
-  height: 100%; /* Chiếm full chiều cao tab */
-  min-height: 0; /* Quan trọng cho Firefox/Flex */
-}
+/* === REPLACE PANE === */
+.split-pane { display: flex; gap: 15px; height: 100%; min-height: 0; }
+.pane { flex: 1; display: flex; flex-direction: column; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; height: 100%; min-height: 0; }
+.pane-header { padding: 10px 15px; background: #f9fafb; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 13px; flex-shrink: 0; }
+.pane-tools { display: flex; gap: 10px; align-items: center; }
 
-.pane {
-  flex: 1; 
-  display: flex; 
-  flex-direction: column; 
-  background: white; 
-  border-radius: 8px; 
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
-  overflow: hidden;
-  height: 100%; /* Full chiều cao cột */
-  min-height: 0; /* Cho phép con co lại */
-}
+.pane textarea { flex: 1; border: none; padding: 15px; resize: none; font-size: 15px; line-height: 1.6; font-family: inherit; color: #333; overflow-y: auto; min-height: 0; }
 
-.pane-header { 
-  padding: 10px 15px; background: #f9fafb; border-bottom: 1px solid #e5e7eb; 
-  display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 13px; flex-shrink: 0; 
-}
-
-/* FIX: Textarea và Output div sẽ tự cuộn, không đẩy khung cha */
-.pane textarea { 
-  flex: 1; 
-  border: none; 
-  padding: 15px; 
-  resize: none; 
-  font-size: 15px; 
-  line-height: 1.6; 
-  font-family: inherit; 
-  color: #333; 
-  overflow-y: auto; /* Cuộn trong ô */
-  min-height: 0; /* Fix lỗi flex item overflow */
-}
-
-/* === OUTPUT DIV === */
 .output-div {
-  flex: 1; 
-  border: none; 
-  padding: 15px; 
-  font-size: 15px; 
-  line-height: 1.8; /* Tăng khoảng cách dòng */
-  font-family: inherit;
-  white-space: pre-wrap; 
-  overflow-y: auto; /* Cuộn trong ô */
-  background-color: #fff; 
-  color: #374151; 
-  word-wrap: break-word; 
-  user-select: text;
-  min-height: 0; /* Fix lỗi flex item overflow */
+  flex: 1; border: none; padding: 15px; font-size: 15px; line-height: 1.8;
+  font-family: inherit; color: #374151; overflow-y: auto; background-color: #fff;
+  word-wrap: break-word; user-select: text; min-height: 0;
 }
-
-/* Thêm khoảng cách đoạn văn trong output */
-.output-div > div, .output-div > p {
-    margin-bottom: 1em;
-}
-
 .output-div:empty::before { content: attr(data-placeholder); color: #9ca3af; pointer-events: none; }
 
-/* HIGHLIGHT STYLE */
-mark.hl-yellow {
-  background-color: #fde047; color: #000; border-radius: 2px; padding: 0 1px;
-  border-bottom: 2px solid #eab308; font-weight: 600; display: inline;
-}
+/* HIGHLIGHT STYLES */
+mark.hl-yellow { background-color: #fde047; color: #000; border-radius: 2px; border-bottom: 2px solid #eab308; }
+mark.hl-blue { background-color: #bae6fd; color: #000; border-radius: 2px; border-bottom: 2px solid #38bdf8; }
+mark.hl-orange { background-color: #fdba74; color: #000; border-radius: 2px; border-bottom: 2px solid #f97316; }
+
 .pane-footer { padding: 10px; border-top: 1px solid #e5e7eb; background: #f9fafb; flex-shrink: 0; }
 
-/* === SPLIT TAB (FIXED SCROLL) === */
-.split-controls { 
-  background: white; padding: 10px 15px; border-radius: 8px; margin-bottom: 10px; 
-  display: flex; align-items: center; gap: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); flex-shrink: 0;
-}
+/* === SPLIT TAB === */
+.split-controls { background: white; padding: 10px 15px; border-radius: 8px; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); flex-shrink: 0; }
 .split-buttons-group { display: flex; gap: 5px; flex-wrap: wrap; }
 .split-mode-btn { width: 32px; height: 32px; border: 1px solid #d1d5db; background: white; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; }
 .split-mode-btn.active { background: #2563eb; color: white; border-color: #2563eb; }
 
-.split-grid-container { 
-  display: grid; 
-  grid-template-columns: repeat(4, 1fr); 
-  gap: 10px; 
-  align-content: start; 
-  height: auto; /* Chiều cao tự động để cho phép scroll ở tab cha */
-}
+.split-grid-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; align-content: start; height: auto; }
 .outputs-wrapper { display: contents; }
-
-.split-box { 
-  background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
-  display: flex; flex-direction: column; border: 1px solid #e5e7eb; 
-  height: 350px; /* Chiều cao cố định cho mỗi box */
-}
+.split-box { background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; flex-direction: column; border: 1px solid #e5e7eb; height: 350px; }
 .split-header { padding: 8px 12px; background: #f9fafb; border-bottom: 1px solid #e5e7eb; font-size: 12px; font-weight: 600; display: flex; justify-content: space-between; }
 .split-box textarea { flex: 1; border: none; padding: 10px; resize: none; font-size: 13px; font-family: inherit; overflow-y: auto; }
 .split-footer { padding: 8px; border-top: 1px solid #e5e7eb; background: #f9fafb; }
-
 @media (max-width: 1200px) { .split-grid-container { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 768px) { .split-grid-container { grid-template-columns: 1fr; } }
 
 /* === NOTIFICATION === */
 #notification-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
-.notification {
-  padding: 12px 20px; border-radius: 6px; color: white; font-size: 13px; font-weight: 600;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15); width: fit-content; min-width: 150px;
-  animation: slideIn 0.3s ease-out; display: flex; align-items: center;
-}
+.notification { padding: 12px 20px; border-radius: 6px; color: white; font-size: 13px; font-weight: 600; box-shadow: 0 4px 8px rgba(0,0,0,0.15); width: fit-content; min-width: 150px; animation: slideIn 0.3s ease-out; display: flex; align-items: center; }
 .notification.success { background: #10b981; border-left: 4px solid #047857; }
 .notification.error { background: #ef4444; border-left: 4px solid #b91c1c; }
+.notification.warning { background: #f59e0b; border-left: 4px solid #b45309; }
 @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: 0; opacity: 1; } }
