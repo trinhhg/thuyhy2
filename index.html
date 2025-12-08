@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tiện Ích Của Trịnh Hg - Pro V14 (UI Fixed)</title>
+  <title>Tiện Ích Của Trịnh Hg - Pro V17 (Optimized)</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="index.css">
 </head>
@@ -11,7 +11,7 @@
   
   <header class="app-header">
     <div class="header-left">
-      <h1>Tiện Ích Của Trịnh Hg</h1>
+      <h1>Tiện Ích Của Trịnh Hg <span class="version-tag">V17 PRO</span></h1>
       <div class="donate-info">
         <span class="donate-label">DON@TE:</span>
         <span class="donate-details">MB BANK - TRINH THI XUAN HUONG – 0917678211</span>
@@ -52,8 +52,8 @@
             <button id="auto-caps" class="btn btn-toggle">Auto Caps: Tắt</button>
           </div>
           <div class="toolbar-group">
-            <button id="import-settings" class="btn btn-outline">Nhập Cài Đặt (CSV)</button>
-            <button id="export-settings" class="btn btn-outline">Xuất Cài Đặt (CSV)</button>
+            <button id="import-settings" class="btn btn-outline">Nhập CSV</button>
+            <button id="export-settings" class="btn btn-outline">Xuất CSV</button>
           </div>
         </div>
 
@@ -74,7 +74,10 @@
         <div class="pane input-pane">
           <div class="pane-header">
             <span>Văn bản gốc</span>
-            <span id="input-word-count" class="badge">Words: 0</span>
+            <div class="pane-tools">
+               <button id="clear-input" class="btn-text">Xóa trắng</button>
+               <span id="input-word-count" class="badge">Words: 0</span>
+            </div>
           </div>
           <textarea id="input-text" class="custom-scrollbar" placeholder="Dán văn bản cần xử lý vào đây..."></textarea>
           <div class="pane-footer">
@@ -84,10 +87,10 @@
 
         <div class="pane output-pane">
           <div class="pane-header">
-            <span>Kết quả (Highlight từ đã thay)</span>
+            <span>Kết quả <span style="font-size:11px; font-weight:normal">(Vàng: Replace | Xanh: AutoCaps | Cam: Cả hai)</span></span>
             <span id="output-word-count" class="badge">Words: 0</span>
           </div>
-          <div id="output-text" class="custom-scrollbar output-div" contenteditable="false" data-placeholder="Kết quả sẽ hiện ra ở đây..."></div>
+          <div id="output-text" class="custom-scrollbar output-div" data-placeholder="Kết quả sẽ hiện ra ở đây..."></div>
           <div class="pane-footer">
             <button id="copy-button" class="btn btn-success full-width">Sao chép kết quả</button>
           </div>
