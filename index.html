@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tiện Ích Của Trịnh Hg - Pro V14 (UI Fixed)</title>
+  <title>Tiện Ích Của Trịnh Hg - V21 (Final Logic Fix)</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="index.css">
 </head>
@@ -31,6 +31,7 @@
     
     <div id="settings" class="tab-content active">
       <div class="panel-container">
+        
         <div class="panel-header">
           <h2>Quản Lý Cặp Thay Thế</h2>
           <div class="mode-actions">
@@ -40,8 +41,8 @@
              </div>
              <button id="add-mode" class="btn btn-primary">+ Mới</button>
              <button id="copy-mode" class="btn btn-secondary">Sao Chép</button>
-             <button id="rename-mode" class="btn btn-warning hidden">Đổi Tên</button>
-             <button id="delete-mode" class="btn btn-danger hidden">Xóa</button>
+             <button id="rename-mode" class="btn btn-warning">Đổi Tên</button>
+             <button id="delete-mode" class="btn btn-danger">Xóa</button>
           </div>
         </div>
 
@@ -52,9 +53,19 @@
             <button id="auto-caps" class="btn btn-toggle">Auto Caps: Tắt</button>
           </div>
           <div class="toolbar-group">
-            <button id="import-settings" class="btn btn-outline">Nhập Cài Đặt (CSV)</button>
-            <button id="export-settings" class="btn btn-outline">Xuất Cài Đặt (CSV)</button>
+            <button id="import-settings" class="btn btn-toggle purple">Nhập CSV (3 cột)</button>
+            <button id="export-settings" class="btn btn-toggle purple">Xuất CSV (3 cột)</button>
           </div>
+        </div>
+
+        <div class="advanced-settings">
+            <div class="setting-block">
+                <label>Ngoại lệ Auto Caps (ngăn cách bằng dấu phẩy):</label>
+                <div class="input-with-btn">
+                    <input type="text" id="caps-exception" placeholder="Ví dụ: jpg, png, com, vn (Những từ này sẽ không bị viết hoa sau dấu chấm)">
+                    <button id="save-exception-btn" class="btn btn-primary btn-sm">Lưu</button>
+                </div>
+            </div>
         </div>
 
         <div class="list-actions">
@@ -84,30 +95,49 @@
 
         <div class="pane output-pane">
           <div class="pane-header">
-            <span>Kết quả (Highlight từ đã thay)</span>
-            <span id="output-word-count" class="badge">Words: 0</span>
+            <span>Kết quả</span>
+            <div class="counters-group">
+                <span id="count-replace" class="badge badge-yellow">Replace: 0</span>
+                <span id="count-caps" class="badge badge-blue">Auto-Caps: 0</span>
+                <span id="output-word-count" class="badge">Words: 0</span>
+            </div>
           </div>
           <div id="output-text" class="custom-scrollbar output-div" contenteditable="false" data-placeholder="Kết quả sẽ hiện ra ở đây..."></div>
           <div class="pane-footer">
-            <button id="copy-button" class="btn btn-success full-width">Sao chép kết quả</button>
+            <button id="copy-button" class="btn btn-success full-width">Sao chép văn bản (Text Only)</button>
           </div>
         </div>
       </div>
     </div>
 
     <div id="split" class="tab-content">
-      <div class="split-controls">
-        <label>Số phần chia:</label>
-        <div class="split-buttons-group">
-          <button class="split-mode-btn active" data-split="2">2</button>
-          <button class="split-mode-btn" data-split="3">3</button>
-          <button class="split-mode-btn" data-split="4">4</button>
-          <button class="split-mode-btn" data-split="5">5</button>
-          <button class="split-mode-btn" data-split="6">6</button>
-          <button class="split-mode-btn" data-split="7">7</button>
-          <button class="split-mode-btn" data-split="8">8</button>
-          <button class="split-mode-btn" data-split="9">9</button>
-          <button class="split-mode-btn" data-split="10">10</button>
+      <div class="split-controls-wrapper">
+        <div class="split-mode-selector">
+            <label><input type="radio" name="split-type" value="count" checked> Chia theo số phần</label>
+            <label><input type="radio" name="split-type" value="regex"> Chia theo Chương (Regex)</label>
+        </div>
+
+        <div id="split-type-count" class="split-sub-controls">
+            <label>Số phần:</label>
+            <div class="split-buttons-group">
+            <button class="split-mode-btn active" data-split="2">2</button>
+            <button class="split-mode-btn" data-split="3">3</button>
+            <button class="split-mode-btn" data-split="4">4</button>
+            <button class="split-mode-btn" data-split="5">5</button>
+            <button class="split-mode-btn" data-split="6">6</button>
+            <button class="split-mode-btn" data-split="7">7</button>
+            <button class="split-mode-btn" data-split="8">8</button>
+            <button class="split-mode-btn" data-split="9">9</button>
+            <button class="split-mode-btn" data-split="10">10</button>
+            </div>
+        </div>
+
+        <div id="split-type-regex" class="split-sub-controls hidden">
+            <label>Regex nhận diện:</label>
+            <div class="input-with-btn">
+                <input type="text" id="split-regex-input" value="" placeholder="Ví dụ: ^(Chương|Chapter|Hồi)\s+\d+[:.]?">
+                <button id="clear-split-regex" class="btn btn-danger btn-sm">Xóa kết quả</button>
+            </div>
         </div>
       </div>
 
@@ -117,9 +147,9 @@
             <span>Văn bản gốc</span>
             <span id="split-input-word-count" class="badge">Words: 0</span>
           </div>
-          <textarea id="split-input-text" class="custom-scrollbar" placeholder="Dán chương truyện vào đây..."></textarea>
+          <textarea id="split-input-text" class="custom-scrollbar" placeholder="Dán cả bộ truyện vào đây..."></textarea>
           <div class="split-footer">
-            <button id="split-action-btn" class="btn btn-primary full-width">Chia Chương Ngay</button>
+            <button id="split-action-btn" class="btn btn-primary full-width">Thực Hiện Chia</button>
           </div>
         </div>
         <div id="split-outputs-wrapper" class="outputs-wrapper"></div>
@@ -127,6 +157,7 @@
     </div>
 
   </main>
+  
   <div id="notification-container"></div>
   <script src="index.js"></script>
 </body>
